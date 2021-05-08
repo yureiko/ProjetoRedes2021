@@ -25,7 +25,7 @@ namespace Sockets
 
             //concatena vetor de destino com os vetore restantes
             System.Buffer.BlockCopy(idDestination,  0, output, 2, 8);
-            System.Buffer.BlockCopy(message,        0, output, 1, 10);
+            System.Buffer.BlockCopy(message,        0, output, 10, message.Length);
 
             return output;
         }
@@ -37,7 +37,10 @@ namespace Sockets
 
             //se o pacote for maior que 1024 bytes, ou menor que 11 (que seria o tamanho mínimo de mensagem válida)
             if (data.Length > 1024 || data.Length < 11)
+            {
+                opcode = 0;
                 return false;
+            }
 
             else
             {
@@ -45,7 +48,7 @@ namespace Sockets
                 idOrigin = data[1];
 
                 System.Buffer.BlockCopy(data, 2, idDestination, 0, 8);
-                System.Buffer.BlockCopy(data, 10 , messageByteFormat, 0, data.Length - 10);
+                System.Buffer.BlockCopy(data, 10, messageByteFormat, 0, data.Length - 10);
 
                 message = Encoding.ASCII.GetString(messageByteFormat);
 

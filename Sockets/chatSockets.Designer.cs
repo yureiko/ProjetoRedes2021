@@ -225,8 +225,6 @@ namespace Sockets
             this.txtBxUsers.Name = "txtBxUsers";
             this.txtBxUsers.Size = new System.Drawing.Size(127, 273);
             this.txtBxUsers.TabIndex = 11;
-            this.txtBxUsers.Text = "Felipe\r\nMaria\r\nJose\r\nJoao\r\nPedro\r\nRafael\r\nMarcos\r\nPaulo\r\nGabriel\r\nFred\r\nGuilherme" +
-    "\r\nDaniel\r\nRicardo\r\n\r\n";
             // 
             // chBxUser2
             // 

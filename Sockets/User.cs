@@ -7,7 +7,7 @@ public class User
 	private uint id;
 	private string nick;
 	//private System.Net.EndPoint ip;
-	private Socket socket;
+	public Socket socket;
 
 	public User(Socket socketRcv, uint connectionNumber)
 	{
