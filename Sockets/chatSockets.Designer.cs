@@ -162,6 +162,7 @@ namespace Sockets
             this.chBxUser1.Size = new System.Drawing.Size(15, 14);
             this.chBxUser1.TabIndex = 12;
             this.chBxUser1.UseVisualStyleBackColor = true;
+            this.chBxUser1.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser3
             // 
@@ -171,6 +172,7 @@ namespace Sockets
             this.chBxUser3.Size = new System.Drawing.Size(15, 14);
             this.chBxUser3.TabIndex = 14;
             this.chBxUser3.UseVisualStyleBackColor = true;
+            this.chBxUser3.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser4
             // 
@@ -180,6 +182,7 @@ namespace Sockets
             this.chBxUser4.Size = new System.Drawing.Size(15, 14);
             this.chBxUser4.TabIndex = 15;
             this.chBxUser4.UseVisualStyleBackColor = true;
+            this.chBxUser4.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser5
             // 
@@ -189,6 +192,7 @@ namespace Sockets
             this.chBxUser5.Size = new System.Drawing.Size(15, 14);
             this.chBxUser5.TabIndex = 16;
             this.chBxUser5.UseVisualStyleBackColor = true;
+            this.chBxUser5.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser6
             // 
@@ -198,6 +202,7 @@ namespace Sockets
             this.chBxUser6.Size = new System.Drawing.Size(15, 14);
             this.chBxUser6.TabIndex = 17;
             this.chBxUser6.UseVisualStyleBackColor = true;
+            this.chBxUser6.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser7
             // 
@@ -207,6 +212,7 @@ namespace Sockets
             this.chBxUser7.Size = new System.Drawing.Size(15, 14);
             this.chBxUser7.TabIndex = 18;
             this.chBxUser7.UseVisualStyleBackColor = true;
+            this.chBxUser7.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser8
             // 
@@ -216,6 +222,7 @@ namespace Sockets
             this.chBxUser8.Size = new System.Drawing.Size(15, 14);
             this.chBxUser8.TabIndex = 19;
             this.chBxUser8.UseVisualStyleBackColor = true;
+            this.chBxUser8.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // txtBxUsers
             // 
@@ -234,6 +241,7 @@ namespace Sockets
             this.chBxUser2.Size = new System.Drawing.Size(15, 14);
             this.chBxUser2.TabIndex = 13;
             this.chBxUser2.UseVisualStyleBackColor = true;
+            this.chBxUser2.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser9
             // 
@@ -243,6 +251,7 @@ namespace Sockets
             this.chBxUser9.Size = new System.Drawing.Size(15, 14);
             this.chBxUser9.TabIndex = 20;
             this.chBxUser9.UseVisualStyleBackColor = true;
+            this.chBxUser9.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser10
             // 
@@ -252,6 +261,7 @@ namespace Sockets
             this.chBxUser10.Size = new System.Drawing.Size(15, 14);
             this.chBxUser10.TabIndex = 21;
             this.chBxUser10.UseVisualStyleBackColor = true;
+            this.chBxUser10.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser11
             // 
@@ -261,6 +271,7 @@ namespace Sockets
             this.chBxUser11.Size = new System.Drawing.Size(15, 14);
             this.chBxUser11.TabIndex = 22;
             this.chBxUser11.UseVisualStyleBackColor = true;
+            this.chBxUser11.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser12
             // 
@@ -270,6 +281,7 @@ namespace Sockets
             this.chBxUser12.Size = new System.Drawing.Size(15, 14);
             this.chBxUser12.TabIndex = 23;
             this.chBxUser12.UseVisualStyleBackColor = true;
+            this.chBxUser12.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chBxUser13
             // 
@@ -279,6 +291,7 @@ namespace Sockets
             this.chBxUser13.Size = new System.Drawing.Size(15, 14);
             this.chBxUser13.TabIndex = 24;
             this.chBxUser13.UseVisualStyleBackColor = true;
+            this.chBxUser13.Click += new System.EventHandler(this.chBxUsers_Click);
             // 
             // chatSockets
             // 

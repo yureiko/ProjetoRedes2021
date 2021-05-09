@@ -38,7 +38,11 @@ namespace Sockets
 
         private string message = "";
 
-        private static uint connectionNumber = 0;
+        private static uint connectionNumber = 1;
+
+        private static int chBxCounter = 0;
+
+        private byte[] idDestination = new byte[8];
 
         //private Protocol protocol = new Protocol();
 
@@ -126,6 +130,8 @@ namespace Sockets
         {
             Socket current = (Socket)AR.AsyncState;
             Protocol protocol = new Protocol();
+            
+            User localUser;
 
             int received;
 
@@ -186,6 +192,29 @@ namespace Sockets
 
 
                         break;
+
+                    case 0x03:
+
+                        
+
+                        for (uint count = 0; count < 8; count++)
+                        {
+                            if (clientUsers.Count > count)
+                            {
+                                localUser = clientUsers.Find(client => client.userGetID() == protocol.idDestination[count]);
+
+                                if (localUser != null && localUser.socket.Connected)
+                                {
+                                    
+                                    localUser.socket.Send(protocol.parseData(0x03, protocol.idOrigin, protocol.idDestination, Encoding.ASCII.GetBytes(protocol.message)));
+
+                                }
+                            }
+
+                        }
+                       
+
+                        break;
                 }
 
 
@@ -222,8 +251,14 @@ namespace Sockets
 
             TcpClient cliente;
             Protocol protocol = new Protocol();
+            User user;
 
             string clientTable = "";
+            string clientId;
+            string clientNick;
+
+            bool clientNumberFlag = false;
+            bool clientNickNameflag = false;
 
             byte[] messageRcv = new byte[2048];
 
@@ -281,32 +316,76 @@ namespace Sockets
 
                                             if (protocol.idOrigin == 0xFF)
                                             {
-                                                txtBxUsers.Clear();
+                                                //txtBxUsers.Clear();
                                                 clientTable = "";
+
+                                                clientUsers.Clear();
+
                                                 char[] messageChars = protocol.message.ToCharArray();
 
+                                                clientId = "";
+                                                clientNick = "";
+
                                                 //busca os caracteres e atualiza a tabela de usuários
-                                                foreach(char c in messageChars)
+                                                foreach (char c in messageChars)
                                                 {
-                                                   
-                                                    if (c == '{')
+
+                                                    if (c == ']')
                                                     {
-                                                        clientTable += " ";
+                                                        clientNumberFlag = false;
                                                     }
                                                     else if (c == '}')
                                                     {
+                                                        clientNickNameflag = false;
                                                         clientTable += Environment.NewLine;
+
+                                                        user = new User(null, Convert.ToUInt16(clientId));
+                                                        user.userSetNick(clientNick);
+
+                                                        clientUsers.Add(user);
+
+                                                        clientId = "";
+                                                        clientNick = "";
+
                                                     }
-                                                    else
+
+                                                    if (clientNumberFlag )
+                                                    {
+                                                        clientId += c;
+                                                    }
+                                                    if(clientNickNameflag)
+                                                    {
+                                                        clientNick += c;
+                                                    }
+
+                                                    if (c == '[')
+                                                    {
+                                                        clientNumberFlag = true;
+                                                    }
+                                                    else if (c == '{')
+                                                    {
+                                                        clientNickNameflag = true;
+                                                        clientTable += " ";
+                                                    }
+                                                    else if(c != ']' && c != '}')
                                                         clientTable += c;
                                                 }
 
-                                                txtBxUsers.Text = clientTable;
-                                            
+                                                //txtBxUsers.Text = clientTable;
+                                                sendToUsersBox("",clientTable);
+                                                
 
                                             }
 
                                                 break;
+
+                                        case 0x03:
+
+  
+                                              sendToChatBox("Append", Environment.NewLine + clientUsers.Find(c => c.userGetID() == protocol.idOrigin).userGetNick() + ": " + protocol.message );
+
+                                                
+                                            break;
 
                                     }
                                 }
@@ -321,6 +400,7 @@ namespace Sockets
 
                     catch (Exception)
                     {
+                        
                         Environment.Exit(Environment.ExitCode);
 
                     }
@@ -360,22 +440,28 @@ namespace Sockets
 
         private void sendConnectionMessage()
         {
+            Protocol protocol = new Protocol();
             try
             {
                 if (connection != null || clientSockets.Count > 0)
                 {
-                    byte[] msgSend = Encoding.ASCII.GetBytes(txtBxNick.Text + ": " + txtBxSendMsg.Text);
+                    byte[] msgSend = Encoding.ASCII.GetBytes(txtBxSendMsg.Text);
 
+                    //parte do cliente
                     if (connection != null)
                     {
                         if (connection.Connected)
                         {
-                            if (txtBxSendMsg.Text == "FIM")
-                            {
-                                connection.Close();
-                            }
+                            //if (txtBxSendMsg.Text == "FIM")
+                            //{
+                            //    connection.Close();
+                            //}
 
-                            connection.Send(msgSend);
+                            findIdDestination();
+
+                            connection.Send(protocol.parseData(0x03, myID, idDestination, msgSend));
+
+                            //connection.Send(msgSend);
 
                             txtBxChat.Text += txtBxNick.Text + ": " + txtBxSendMsg.Text + Environment.NewLine;
 
@@ -383,6 +469,7 @@ namespace Sockets
                         }
                     }
 
+                    //parte do servidor
                     if (clientSockets.Count > 0)
                     {
                         //tirar essa função daqui e mandar para uma que trate no servidor (procura o(s) cliente(s) e manda a mensagem)
@@ -390,22 +477,22 @@ namespace Sockets
                         {
                             if (client.Connected)
                             {
-                                client.Send(msgSend);
+                                client.Send(protocol.parseData(0x03, protocol.idOrigin, protocol.idDestination, msgSend));
 
-                                if (txtBxSendMsg.Text == "FIM")
-                                {
-                                    client.Close();
-                                }
+                                //if (txtBxSendMsg.Text == "FIM")
+                                //{
+                                //    client.Close();
+                                //}
                             }
                         });
 
 
-                        if (txtBxSendMsg.Text == "FIM")
-                        {
-                            server.Stop();
+                        //if (txtBxSendMsg.Text == "FIM")
+                        //{
+                        //    server.Stop();
 
-                            Application.Exit();
-                        }
+                        //    Application.Exit();
+                        //}
 
                         txtBxChat.Text += txtBxNick.Text + ": " + txtBxSendMsg.Text + Environment.NewLine;
 
@@ -442,6 +529,28 @@ namespace Sockets
             }
         }
 
+
+        private void sendToUsersBox(string cmd, string s)
+        {
+            MethodInvoker methodInvokerDelegate = delegate ()
+            {
+                if (cmd == "Append")
+                    txtBxUsers.Text += s + Environment.NewLine;
+                else
+                    txtBxUsers.Text = s;
+            };
+            if (this.InvokeRequired)
+            {
+                this.Invoke(methodInvokerDelegate);
+            }
+            else
+            {
+                methodInvokerDelegate();
+            }
+        }
+
+
+
         private void updateClientTable()
         {
             Protocol protocol = new Protocol();
@@ -468,6 +577,53 @@ namespace Sockets
 
 
             }
+
+        }
+
+        private void findIdDestination()
+        {
+
+            uint i = 0;
+            idDestination = new byte[8];
+
+            if (chBxUser1.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[0].userGetID());
+
+            if (chBxUser2.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[1].userGetID());
+
+            if (chBxUser3.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[2].userGetID());
+
+            if (chBxUser4.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[3].userGetID());
+
+            if (chBxUser5.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[4].userGetID());
+
+            if (chBxUser6.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[5].userGetID());
+
+            if (chBxUser7.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[6].userGetID());
+
+            if (chBxUser8.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[7].userGetID());
+
+            if (chBxUser9.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[8].userGetID());
+
+            if (chBxUser10.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[9].userGetID());
+
+            if (chBxUser11.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[10].userGetID());
+
+            if (chBxUser12.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[11].userGetID());
+
+            if (chBxUser13.Checked && clientUsers.Count > i)
+                idDestination[i++] = Convert.ToByte(clientUsers[12].userGetID());
 
         }
 
@@ -529,5 +685,22 @@ namespace Sockets
 
         }
 
+        private void chBxUsers_Click(object sender, EventArgs e)
+        {
+            System.Windows.Forms.CheckBox chBx = (System.Windows.Forms.CheckBox)sender;
+            if (chBx.Checked)
+            {
+                if (chBxCounter >= 8)
+                {
+                    sendToChatBox("Append", "NUMERO MAXIMO DE USUARIOS SELECIONADOS DEVE SER MENOR OU IGUAL A 8");
+                    chBx.Checked = false;
+                }
+                else
+                    chBxCounter++;
+            }
+            else
+                chBxCounter--;
+
+        }
     }
 }
