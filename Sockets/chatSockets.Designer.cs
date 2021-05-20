@@ -105,6 +105,7 @@ namespace Sockets
             this.txtBxChat.Location = new System.Drawing.Point(19, 98);
             this.txtBxChat.Multiline = true;
             this.txtBxChat.Name = "txtBxChat";
+            this.txtBxChat.ReadOnly = true;
             this.txtBxChat.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtBxChat.Size = new System.Drawing.Size(413, 279);
             this.txtBxChat.TabIndex = 5;
@@ -230,6 +231,7 @@ namespace Sockets
             this.txtBxUsers.Location = new System.Drawing.Point(476, 98);
             this.txtBxUsers.Multiline = true;
             this.txtBxUsers.Name = "txtBxUsers";
+            this.txtBxUsers.ReadOnly = true;
             this.txtBxUsers.Size = new System.Drawing.Size(127, 273);
             this.txtBxUsers.TabIndex = 11;
             // 

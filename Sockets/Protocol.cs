@@ -50,7 +50,7 @@ namespace Sockets
                 System.Buffer.BlockCopy(data, 2, idDestination, 0, 8);
                 System.Buffer.BlockCopy(data, 10, messageByteFormat, 0, data.Length - 10);
 
-                message = Encoding.ASCII.GetString(messageByteFormat);
+                message = Encoding.UTF8.GetString(messageByteFormat);
 
                 return true;
             }

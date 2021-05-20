@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Threading;
-using System.IO;
 
 namespace Sockets
 {
@@ -36,15 +31,11 @@ namespace Sockets
 
         private byte myID;
 
-        private string message = "";
-
         private static uint connectionNumber = 1;
 
         private static int chBxCounter = 0;
 
         private byte[] idDestination = new byte[8];
-
-        //private Protocol protocol = new Protocol();
 
         public chatSockets()
         {
@@ -119,11 +110,6 @@ namespace Sockets
             connectionNumber++;
 
             server.BeginAcceptSocket(AcceptCallback, null);
-
-            //System.Net.EndPoint temp = socket.RemoteEndPoint;
-           
-
-
         }
 
         private void ReceiveCallback(IAsyncResult AR)
@@ -195,8 +181,6 @@ namespace Sockets
 
                     case 0x03:
 
-                        
-
                         for (uint count = 0; count < 8; count++)
                         {
                             if (clientUsers.Count > count)
@@ -206,41 +190,18 @@ namespace Sockets
                                 if (localUser != null && localUser.socket.Connected)
                                 {
                                     
-                                    localUser.socket.Send(protocol.parseData(0x03, protocol.idOrigin, protocol.idDestination, Encoding.ASCII.GetBytes(protocol.message)));
+                                    localUser.socket.Send(protocol.parseData(0x03, protocol.idOrigin, protocol.idDestination, Encoding.UTF8.GetBytes(protocol.message)));
 
                                 }
                             }
 
                         }
-                       
+
+                        sendToChatBox("Append", clientUsers.Find(c => c.userGetID() == protocol.idOrigin).userGetNick() + ": " + protocol.message.Replace("\0", string.Empty));
 
                         break;
                 }
 
-
-            }
-
-            string text = Encoding.ASCII.GetString(recBuf);
-
-            sendToChatBox("Append", text);
-
-            if (text.Contains("FIM")) // Client wants to exit gracefully
-            {
-                // Always Shutdown before closing
-                current.Shutdown(SocketShutdown.Both);
-
-                current.Close();
-
-                clientSockets.Remove(current);
-
-                //procura o usuário cujo socket é igual ao que está sendo finalizado
-                clientUsers.Remove(clientUsers.Find(x => x.socket == current));
-
-                updateClientTable();
-
-                sendToChatBox("Append", "Cliente desconectado" + current.RemoteEndPoint.ToString());
-
-                return;
             }
           
             current.BeginReceive(buffer, 0, 2048, SocketFlags.None, ReceiveCallback, current);
@@ -263,7 +224,6 @@ namespace Sockets
             byte[] messageRcv = new byte[2048];
 
             try
-
             {
 
                 cliente = new TcpClient();
@@ -275,7 +235,6 @@ namespace Sockets
                 do
                 {
                     try
-
                     {
 
                         if (connection != null)
@@ -285,8 +244,6 @@ namespace Sockets
                             var data = new byte[received];
 
                             Array.Copy(messageRcv, data, received);
-
-                            message = Encoding.ASCII.GetString(data);
 
                             if(received > 0)
                             {
@@ -305,8 +262,7 @@ namespace Sockets
                                                 if (connection != null)
                                                 {
                                                     //manda o nickname para o servidor
-                                                    connection.Send(protocol.parseData(0x01, myID, Enumerable.Repeat((byte)0x00, 8).ToArray(), Encoding.ASCII.GetBytes(txtBxNick.Text)));
-
+                                                    connection.Send(protocol.parseData(0x01, myID, Enumerable.Repeat((byte)0x00, 8).ToArray(), Encoding.UTF8.GetBytes(txtBxNick.Text)));
                                                 }
                                             }
 
@@ -316,7 +272,6 @@ namespace Sockets
 
                                             if (protocol.idOrigin == 0xFF)
                                             {
-                                                //txtBxUsers.Clear();
                                                 clientTable = "";
 
                                                 clientUsers.Clear();
@@ -371,27 +326,26 @@ namespace Sockets
                                                         clientTable += c;
                                                 }
 
-                                                //txtBxUsers.Text = clientTable;
                                                 sendToUsersBox("",clientTable);
-                                                
-
                                             }
 
-                                                break;
+                                            break;
 
                                         case 0x03:
 
+                                            if(protocol.idOrigin == 0xFF)
+                                            {
+                                                sendToChatBox("Append", "Server: " + protocol.message.Replace("\0", string.Empty));
+                                            }
+                                            else
+                                            {
+                                                sendToChatBox("Append", clientUsers.Find(c => c.userGetID() == protocol.idOrigin).userGetNick() + ": " + protocol.message.Replace("\0", string.Empty));
+                                            }
   
-                                              sendToChatBox("Append", Environment.NewLine + clientUsers.Find(c => c.userGetID() == protocol.idOrigin).userGetNick() + ": " + protocol.message );
-
-                                                
                                             break;
-
                                     }
                                 }
                             }
-
-                            //sendToChatBox("Append", message);
 
                             messageRcv = new byte[2048];
                            
@@ -400,25 +354,16 @@ namespace Sockets
 
                     catch (Exception)
                     {
-                        
                         Environment.Exit(Environment.ExitCode);
-
                     }
 
-                } while (!message.Contains("FIM"));
-
-                cliente.Close();
-
-                Application.Exit();
+                } while (true);
 
             }
 
             catch (Exception error)
-
             {
-
                 MessageBox.Show(error.ToString());
-
             }
         }
 
@@ -445,23 +390,16 @@ namespace Sockets
             {
                 if (connection != null || clientSockets.Count > 0)
                 {
-                    byte[] msgSend = Encoding.ASCII.GetBytes(txtBxSendMsg.Text);
+                    byte[] msgSend = Encoding.UTF8.GetBytes(txtBxSendMsg.Text);
 
                     //parte do cliente
                     if (connection != null)
                     {
                         if (connection.Connected)
                         {
-                            //if (txtBxSendMsg.Text == "FIM")
-                            //{
-                            //    connection.Close();
-                            //}
-
                             findIdDestination();
 
                             connection.Send(protocol.parseData(0x03, myID, idDestination, msgSend));
-
-                            //connection.Send(msgSend);
 
                             txtBxChat.Text += txtBxNick.Text + ": " + txtBxSendMsg.Text + Environment.NewLine;
 
@@ -472,27 +410,14 @@ namespace Sockets
                     //parte do servidor
                     if (clientSockets.Count > 0)
                     {
-                        //tirar essa função daqui e mandar para uma que trate no servidor (procura o(s) cliente(s) e manda a mensagem)
                         clientSockets.ForEach(client =>
                         {
                             if (client.Connected)
                             {
-                                client.Send(protocol.parseData(0x03, protocol.idOrigin, protocol.idDestination, msgSend));
+                                client.Send(protocol.parseData(0x03, 0xFF, Enumerable.Repeat((byte)0x00, 8).ToArray(), msgSend));
 
-                                //if (txtBxSendMsg.Text == "FIM")
-                                //{
-                                //    client.Close();
-                                //}
                             }
                         });
-
-
-                        //if (txtBxSendMsg.Text == "FIM")
-                        //{
-                        //    server.Stop();
-
-                        //    Application.Exit();
-                        //}
 
                         txtBxChat.Text += txtBxNick.Text + ": " + txtBxSendMsg.Text + Environment.NewLine;
 
@@ -560,21 +485,16 @@ namespace Sockets
             if (clientUsers.Count > 0)
             {
                 clientUsers.ForEach(User =>
-
-                clientTable += "[" + User.userGetID().ToString() + "]" + "{" + User.userGetNick() + "}"
-
+                    clientTable += "[" + User.userGetID().ToString() + "]" + "{" + User.userGetNick() + "}"
                 );
 
                 clientSockets.ForEach(client =>
                 {
                     if (client.Connected)
                     {
-                        client.Send(protocol.parseData(0x02, 0xFF, Enumerable.Repeat((byte)0x00, 8).ToArray(), Encoding.ASCII.GetBytes(clientTable)));
-                        
+                        client.Send(protocol.parseData(0x02, 0xFF, Enumerable.Repeat((byte)0x00, 8).ToArray(), Encoding.UTF8.GetBytes(clientTable)));
                     }
                 });
-
-
 
             }
 
@@ -582,7 +502,6 @@ namespace Sockets
 
         private void findIdDestination()
         {
-
             uint i = 0;
             idDestination = new byte[8];
 
@@ -624,7 +543,6 @@ namespace Sockets
 
             if (chBxUser13.Checked && clientUsers.Count > i)
                 idDestination[i++] = Convert.ToByte(clientUsers[12].userGetID());
-
         }
 
 
@@ -640,6 +558,7 @@ namespace Sockets
                 txtBxPort.Enabled = false;
                 btnSend.Enabled = true;
                 txtBxSendMsg.Enabled = true;
+                txtBxNick.Enabled = false;
 
                 ip = txtBxIP.Text;
                 port = txtBxPort.Text;
@@ -664,6 +583,8 @@ namespace Sockets
                 txtBxPort.Enabled = false;
                 btnSend.Enabled = true;
                 txtBxSendMsg.Enabled = true;
+                txtBxNick.Text = "Server";
+                txtBxNick.Enabled = false;
 
                 port = txtBxPort.Text;
 
@@ -687,7 +608,7 @@ namespace Sockets
 
         private void chBxUsers_Click(object sender, EventArgs e)
         {
-            System.Windows.Forms.CheckBox chBx = (System.Windows.Forms.CheckBox)sender;
+            CheckBox chBx = (CheckBox)sender;
             if (chBx.Checked)
             {
                 if (chBxCounter >= 8)

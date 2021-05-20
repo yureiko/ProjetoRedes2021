@@ -39,3 +39,13 @@ D:\Downloads\Sockets\obj\Debug\Sockets.exe
 D:\Downloads\Sockets\obj\Debug\Sockets.pdb
 D:\Downloads\Sockets\obj\Debug\Sockets.chatSockets.resources
 C:\Users\Yuri\Desktop\Redes\Sockets\obj\Debug\Sockets.chatSockets.resources
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\bin\Debug\Sockets.exe.config
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\bin\Debug\Sockets.exe
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\bin\Debug\Sockets.pdb
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\obj\Debug\Sockets.csprojAssemblyReference.cache
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\obj\Debug\Sockets.chatSockets.resources
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\obj\Debug\Sockets.Properties.Resources.resources
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\obj\Debug\Sockets.csproj.GenerateResource.cache
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\obj\Debug\Sockets.csproj.CoreCompileInputs.cache
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\obj\Debug\Sockets.exe
+C:\Users\ADM\Documents\ProjetoRedes2021\Sockets\obj\Debug\Sockets.pdb
