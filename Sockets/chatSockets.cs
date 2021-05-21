@@ -109,7 +109,10 @@ namespace Sockets
             socket.Send(protocol.parseData(0x01, 0xFF, Enumerable.Repeat(Convert.ToByte(connectionNumber), 8).ToArray(), Enumerable.Repeat((byte)0x00, 8).ToArray()));
             connectionNumber++;
 
-            server.BeginAcceptSocket(AcceptCallback, null);
+            if (connectionNumber < 255)
+            {
+                server.BeginAcceptSocket(AcceptCallback, null);
+            }
         }
 
         private void ReceiveCallback(IAsyncResult AR)
