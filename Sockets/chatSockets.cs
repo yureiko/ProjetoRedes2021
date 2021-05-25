@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+ * Projeto Chat via sockets
+ * Disciplina de Redes de computadores
+ * UTFPR 05/2021 turma S11
+ * 
+ * Daniel Lane
+ * Leonardo Garcia
+ * João Victor
+ * Yuri Andreiko
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
